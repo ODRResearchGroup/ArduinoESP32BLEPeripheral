@@ -34,6 +34,7 @@
 #include <SD.h>
 #include <SPI.h>
 #include <Wire.h>
+#include <esp_mac.h>
 #include <sys/time.h>
 
 BLEServer *pServer = NULL;
@@ -242,7 +243,12 @@ void setup() {
   initMEMS();
   initBME680();
   // Create the BLE Device
-  BLEDevice::init("BRIAN");
+  uint8_t bluetoothMac[6];
+  esp_read_mac(bluetoothMac, ESP_MAC_BT);
+  char deviceName[16];
+  snprintf(deviceName, sizeof(deviceName), "Brian-%02X%02X%02X",
+           bluetoothMac[3], bluetoothMac[4], bluetoothMac[5]);
+  BLEDevice::init(deviceName);
   // this is for increasing the MTU size - default is 23 bytes, we can set it up
   // to 517 bytes
   BLEDevice::setMTU(517);
